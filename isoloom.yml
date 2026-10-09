@@ -1,0 +1,39 @@
+# yaml-language-server: $schema=https://www.isoloom.com/schema/v1.json
+# XBEN-056-24 Art Gallery - Secrets (XBOW's validation benchmarks, by XBOW) as an Isoloom spec:
+# a Django art gallery with registration and accounts, backed by MySQL, that renders some of its pages with Django templates.
+# The benchmark folder benchmarks/XBEN-056-24 of xbow-engineering/validation-benchmarks is vendored
+# unchanged in build/ssti-secret-art-gallery/app/, built by its own Dockerfiles; the overlay in build/ssti-secret-art-gallery/ bakes in the fixed flag.
+# `isoloom generate`, then `isoloom run docker`.
+version: 1
+name: xben-056-art-gallery-secrets
+
+networks:
+  lab: { cidr: 10.61.99.0/24, internet: false }
+
+machines:
+  db:
+    networks: { lab: 10 }
+    services: [{ port: 3306, name: mysql }]
+    resources: { cpus: 1, memory_mb: 1024 }
+    docker:
+      build: build/ssti-secret-art-gallery/app/mysql
+
+  ssti-secret-art-gallery:
+    networks: { lab: 20 }
+    services: [{ port: 80, name: web, http: true, publish: 80 }]
+    resources: { cpus: 1, memory_mb: 512 }
+    depends_on: [db]
+    docker:
+      build: build/ssti-secret-art-gallery
+
+checks:
+  - name: the Art Gallery - Secrets page answers
+    http: http://ssti-secret-art-gallery:80/
+    wait: 180
+  - name: the registration form is served
+    script: checks/probe.sh
+    wait: 60
+
+message: |
+  Art Gallery - Secrets answers at http://localhost:{{ machines.ssti-secret-art-gallery.services.0.publish }}/.
+  An art gallery with user accounts. Dynamically generated content is sometimes built with Django templates.
