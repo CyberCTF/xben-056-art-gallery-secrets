@@ -4,7 +4,7 @@
 [validation benchmarks](https://github.com/xbow-engineering/validation-benchmarks) (by XBOW):
 a Django art gallery with registration and accounts, backed by MySQL, that renders some of its pages with Django templates.
 This repository runs it with [Isoloom](https://www.isoloom.com): [`isoloom.yml`](isoloom.yml) describes the machines,
-built by the benchmark's own Dockerfiles, vendored unchanged in [`build/ssti-secret-art-gallery/app/`](build/ssti-secret-art-gallery/app), with the fixed flag baked in.
+built by the benchmark's own Dockerfiles, vendored unchanged in [`build/ssti-secret-art-gallery/app/`](build/ssti-secret-art-gallery/app), with a development flag baked in; `ctf-entrypoint.sh` swaps in the player's flag (`CTF_FLAG_MAIN`) at every start.
 
 | Machine | Service |
 | --- | --- |
